@@ -1,9 +1,21 @@
+/**
+ * @module controllers
+ * @description Controllers for handling user registration, login, and public key retrieval.
+ */
+
 const bcrypt = require('bcrypt');
 const { connection, getUser } = require('./db');
 const { generateToken } = require('./auth');
 
 const saltRounds = 10;
 
+/**
+ * Registers a new user and returns a JWT token upon success.
+ *
+ * @param {Object} req - The Express.js request object.
+ * @param {Object} res - The Express.js response object.
+ * @returns {void} No direct return value, but sends a JWT token as a response or an error status.
+ */
 async function registerUser(req, res) {
     try {
         let salt = bcrypt.genSaltSync(saltRounds);
@@ -27,6 +39,13 @@ async function registerUser(req, res) {
     }
 }
 
+/**
+ * Logs in a user and returns a JWT token upon successful authentication.
+ *
+ * @param {Object} req - The Express.js request object.
+ * @param {Object} res - The Express.js response object.
+ * @returns {void} No direct return value, but sends a JWT token as a response or an error status.
+ */
 async function login(req, res) {
     try {
         let userData = await getUser(req.body.email);
@@ -45,6 +64,13 @@ async function login(req, res) {
     } 
 }
 
+/**
+ * Retrieves the public key used for token verification.
+ *
+ * @param {Object} req - The Express.js request object.
+ * @param {Object} res - The Express.js response object.
+ * @returns {void} No direct return value, but sends the public key as a response or an error status.
+ */
 function getPublicKey(req, res) {
     res.send(publicKey);
 }
