@@ -7,7 +7,7 @@
         "start": "node src/index.js",
         "test": "env-cmd -e test mocha"
     },
-    "author": "TSchreiber@github.com",
+    "author": "TSchreiber",
     "license": "ISC",
     "dependencies": {
         "bcrypt": "^5.1.1",
