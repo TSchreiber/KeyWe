@@ -12,13 +12,12 @@ function connectDB() {
 }
 
 async function getUser(email) {
-    return new Promise((res,rej) => {
-        connection.query('select * from users where email=?', email,
-        (err, result, fields) => {
-            if (err) rej(err);
-            else res(result[0]);
-        });
-    });
+    try {
+        let [result] = await connection.promise().query('select * from users where email=?', email);
+        return result[0];
+    } catch (err) {
+        throw err;
+    }
 }
 
 module.exports = { connection, connectDB, getUser };
