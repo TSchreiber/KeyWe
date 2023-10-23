@@ -5,7 +5,7 @@
 
 const bcrypt = require('bcrypt');
 const { connection, getUser } = require('./db');
-const { generateToken } = require('./auth');
+const { generateToken, publicKey } = require('./auth');
 
 const saltRounds = 10;
 

@@ -62,6 +62,7 @@ describe('Controllers', () => {
                 getPublicKey({},{
                     send: (key) => {
                         assert(key == publicKey);
+                        resolve();
                     },
                     sendStatus: (statusCode) => {
                         reject(new Error("Responded with status code " + statusCode));
