@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node src/index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "env-cmd -e test mocha"
     },
     "author": "",
     "license": "ISC",
@@ -19,6 +19,8 @@
         "mysql2": "^3.6.2"
     },
     "devDependencies": {
-        "jsdoc": "^4.0.2"
+        "env-cmd": "^10.1.0",
+        "jsdoc": "^4.0.2",
+        "mocha": "^10.2.0"
     }
 }

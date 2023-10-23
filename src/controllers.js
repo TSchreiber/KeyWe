@@ -25,11 +25,10 @@ async function registerUser(req, res) {
             hashedPassword
         }, (err, result) => {
             if (err) {
-                console.error(err);
-                res.sendStatus(500);
+                throw err;
             } else {
-                delete result.hashedPassword;
-                let token = generateToken(result);
+                delete req.body.password;
+                let token = generateToken(req.body);
                 res.send(token);
             }
         });
