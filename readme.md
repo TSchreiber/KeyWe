@@ -1,7 +1,18 @@
 ![](https://github.com/TSchreiber/KeyWe/blob/main/public/logo-text-128px.png?raw=true) 
 # KeyWe - Single Sign-On (SSO) Service
 
-KeyWe is a Single Sign-On (SSO) service that provides user registration, login, and token management for authentication. This README provides an overview of the project structure, key components, and instructions for setting up and running the service.
+KeyWe is a Single Sign-On (SSO) service that simplifies user authentication by 
+offering user registration, login, and token management. KeyWe leverages JSON 
+Web Tokens (JWT) signed with the RS256 (RSA Signature with SHA-256) algorithm 
+for secure user authentication.
+
+Single Sign-On (SSO) is achieved by having KeyWe manage user authentication. 
+When a user accesses a service, they use KeyWe's `POST /login` endpoint to 
+authenticate the user, and upon successful authentication, KeyWe generates a
+JWT containing user information and signs it with the RS256 algorithm. This 
+signed JWT is then sent to the service. The service can verify the JWT's 
+authenticity using KeyWe's public key obtained from KeyWe's `GET /public_key` 
+endpoint, allowing seamless access without the need for the user to log in again.
 
 ## Table of Contents
 
