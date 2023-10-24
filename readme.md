@@ -1,4 +1,5 @@
-# ![](https://github.com/TSchreiber/KeyWe/blob/main/public/logo-64px.png?raw=true) KeyWe - Single Sign-On (SSO) Service
+![](https://github.com/TSchreiber/KeyWe/blob/main/public/logo-text-128px.png?raw=true) 
+# KeyWe - Single Sign-On (SSO) Service
 
 KeyWe is a Single Sign-On (SSO) service that provides user registration, login, and token management for authentication. This README provides an overview of the project structure, key components, and instructions for setting up and running the service.
 
