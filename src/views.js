@@ -1,16 +1,27 @@
+const pwPattern = require("../src/passwordPatternBuilder.js");
+
 /**
  *
  */
 function renderLogin(_, res) {
-    let pattern = "(?=.*\d)(?=.*[\W_]).{7,}";
-    let title = "Minimum of 7 characters. Should have a least one special character and one number.";
-    res.render("login", {PASSWORD_PATTERN: pattern, PASSWORD_TITLE: title});
+    res.render("login");
 }
 
 /**
  *
  */
-function renderRegister(req, res) {
+function renderRegister(_, res) {
+    let {pattern, title} = pwPattern.from({
+        MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH,
+        CONTAINS_SPECIAL: process.env.PASSWORD_CONTAINS_SPECIAL,
+        CONTAINS_UPPER: process.env.PASSWORD_CONTAINS_UPPER,
+        CONTAINS_LOWER: process.env.PASSWORD_CONTAINS_LOWER,
+        CONTAINS_DIGIT: process.env.PASSWORD_CONTAINS_DIGIT,
+    });
+    res.render("register", {
+        PASSWORD_PATTERN: pattern,
+        PASSWORD_TITLE: title
+    });
 }
 
 module.exports = { renderLogin, renderRegister };

@@ -1,0 +1,17 @@
+<html>
+    <body>
+        <form>
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" required/>
+            <label for="password">Password</label>
+            <input type="password"
+                id="password"
+                name="password"
+                required
+                pattern="<%=PASSWORD_PATTERN%>"
+                title="<%=PASSWORD_TITLE%>"/>
+            <input type="submit"/>
+        </form>
+    </body>
+</html>
+
