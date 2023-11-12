@@ -1,15 +1,78 @@
 <html>
     <body>
-        <form>
-            <label for="username">Username</label>
-            <input id="username" name="username" type="text"/>
+        <form onsubmit="form_onSubmit(event)">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required/>
             <label for="password">Password</label>
             <input type="password"
                 id="password"
                 name="password"
-                pattern="<%=PASSWORD_PATTERN%>"
-                title="<%=PASSWORD_TITLE%>"/>
+                required />
             <input type="submit"/>
         </form>
     </body>
+
+<style>
+:root {
+    font-family: sans-serif;
+}
+
+html,body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    background: #f0f0f0;
+    padding: 1.5em;
+    border-radius: 0.5em;
+}
+
+input:not(:last-child) {
+    margin-bottom: 1.5em;
+}
+
+input[type=submit] {
+    font-size: 1em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+}
+</style>
+
+<script>
+function form_onSubmit(event) {
+    let data = new FormData(event.target);
+    fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: data.get("email"),
+            password: data.get("password")
+        })
+    })
+    .catch(err => console.error(err))
+    .then(res => res.text())
+    .then(token => {
+        let redirect_url =
+            new URLSearchParams(window.location.search)
+            .get("redirect_url");
+        window.location = `${redirect_url}?token=${token}`;
+    });
+    event.preventDefault();
+    return false;
+}
+</script>
 </html>
+
