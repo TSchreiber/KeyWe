@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.2
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: keywe
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    environment:
+      db_host: mysql
+      db_user: root
+      db_pass: password
+      db_name: keywe
+      private_key_path: "./keypair.pem"
+      public_key_path: "./publickey.pem"
+      PORT: 3000
+
+volumes:
+  mysql-data:

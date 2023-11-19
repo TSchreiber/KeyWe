@@ -2,8 +2,7 @@ require('dotenv').config({path: "../env/test.env" });
 const assert = require('assert');
 const { verifyToken, publicKey } = require('../src/auth');
 const { registerUser, login, getPublicKey } = require('../src/controllers');
-const { connectDB, connection, getUser } = require('../src/db');
-connectDB();
+const { connection, getUser } = require('../src/db');
 
 describe('Controllers', () => {
 

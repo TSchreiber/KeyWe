@@ -24,6 +24,7 @@ endpoint, allowing seamless access without the need for the user to log in again
 - [API Routes (routes.js)](#api-routes-routesjs)
 - [Testing (test/controllers.js)](#testing-controllersjs)
 - [Getting Started](#getting-started)
+- [Running the Project with docker-compose](#Running-the-Project-with-docker-compose)
 - [Dependencies](#dependencies)
 
 ## Project Structure
@@ -87,6 +88,35 @@ endpoint, allowing seamless access without the need for the user to log in again
    ```
 
 5. Access the API routes at `http://localhost:<PORT>/` 
+
+## Running the Project with docker-compose
+
+1. Clone the repository:
+
+   ```bash
+   git clone git@github.com:TSchreiber/KeyWe.git
+   ```
+
+2. Create an RSA keypair with `openssl` or any other program capable of generating RSA keypairs:
+
+   ```bash
+   openssl genrsa -out private_key.pem 2048
+   openssl rsa -in private_key.pem -pubout -out public_key.pem
+   ```
+
+3. Run your entire application stack using Docker Compose:
+
+   ```bash
+   docker-compose up
+   ```
+
+   The MySQL service may need a few minutes to start up. You will know that the service is ready when it logs:
+   
+   ```text
+   /usr/sbin/mysqld: ready for connections. Version: '8.2.0'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+   ```
+
+   Note: it will say it is ready for connections earlier, but the port will be `port: 0` so it is not actually ready for use at that time.
 
 ## Dependencies
 
