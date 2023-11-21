@@ -51,4 +51,16 @@ router.get('/login', renderLogin);
  */
 router.get('/register', renderRegister);
 
+/**
+ * @module routes
+ * @name POST /refresh
+ * @function
+ * @group User - Operations for refreshing an id token
+ * @param {Object} req.body.refresh_token - user's refresh token
+ * @returns {Object} 200 - An object containing an id token in the `id_token` attribute
+ * @returns {number} 403 - Forbidden if the token is invalid
+ * @returns {Error} 500 - Internal server error
+ */
+router.post('/token', refreshToken);
+
 module.exports = router;

@@ -4,10 +4,24 @@
  */
 
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
+const db = require("./db");
 const { connection, getUser } = require('./db');
-const { generateToken, publicKey } = require('./auth');
+const { generateToken, publicKey, verifyToken } = require('./auth');
 
 const saltRounds = 10;
+/**
+ * The time (in seconds) the id token should remain valid for. \
+ * Can be configured by setting the `id_token_TTL` environment variable. \
+ * Default: 5 minutes
+ **/
+const idTokenTTL = process.env.id_token_TTL | 5 * 60;
+/**
+ * The time (in seconds) the refresh token should remain valid for. \
+ * Can be configured by setting the `refresh_token_TTL` environment variable. \
+ * Default: 30 days
+ **/
+const refreshTokenTTL = process.env.refresh_token_TTL | 30 * 24 * 60 * 60;
 
 /**
  * Registers a new user and returns a JWT token upon success.
@@ -27,9 +41,7 @@ async function registerUser(req, res) {
             if (err) {
                 throw err;
             } else {
-                delete req.body.password;
-                let token = generateToken(req.body);
-                res.send(token);
+                login(req,res);
             }
         });
     } catch (e) {
@@ -47,20 +59,95 @@ async function registerUser(req, res) {
  */
 async function login(req, res) {
     try {
-        let userData = await getUser(req.body.email);
+        let userData = await db.getUser(req.body.email);
         let passwordsMatch = bcrypt.compareSync(
             req.body.password, userData.hashedPassword);
         if (passwordsMatch) {
             delete userData.hashedPassword;
-            let token = generateToken(userData);
-            res.send(token);
+
+            let idTokenPayload = structuredClone(userData);
+            idTokenPayload.token_type = "id";
+            idTokenPayload.exp = Math.floor(new Date().getTime() / 1000) + idTokenTTL;
+            let id_token = generateToken(idTokenPayload);
+
+            // TODO add token to db and assign the id
+            let refreshTokenPayload = {
+                email: userData.email,
+                token_type: "refresh",
+                exp: Math.floor(new Date().getTime() / 1000) + refreshTokenTTL,
+                token_id: uuidv4()
+            };
+            let refresh_token = generateToken(refreshTokenPayload);
+            // add the token to the database
+            await db.createToken(refreshTokenPayload);
+
+            res.send({id_token, refresh_token});
         } else {
             res.sendStatus(403);
         }
     } catch (e) {
         console.error(e);
         res.sendStatus(500);
-    } 
+    }
+}
+
+/**
+ * Verifies the refresh token and then returns a new id token
+ *
+ * @param {Object} req - The Express.js request object.
+ * @param {Object} res - The Express.js response object.
+ * @returns {void} No direct return value, but sends a JWT token as a response or an error status.
+ */
+async function refreshToken(req, res) {
+    try {
+        if (!req.body.refresh_token) {
+            res.sendStatus(401);
+            return;
+        }
+
+        let tokenData;
+        try {
+            tokenData = await verifyToken(req.body.refresh_token);
+        } catch (_) {
+            res.sendStatus(403);
+            return;
+        }
+        if (await db.isTokenRevoked(tokenData.token_id)) {
+            res.sendStatus(403);
+            return;
+        }
+        let userData = await db.getUser(tokenData.email);
+        delete userData.hashedPassword;
+        let idTokenPayload = userData;
+        idTokenPayload.token_type = "id";
+        idTokenPayload.exp = Math.floor(new Date().getTime() / 1000) + idTokenTTL;
+        let id_token = generateToken(idTokenPayload);
+        res.send({id_token});
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+}
+
+async function revokeToken(req, res) {
+    try {
+        if (!req.body.refresh_token) {
+            res.sendStatus(401);
+            return;
+        }
+        let tokenData;
+        try {
+            tokenData = await verifyToken(req.body.refresh_token);
+        } catch (_) {
+            res.sendStatus(403);
+            return;
+        }
+        await db.revokeToken(tokenData.token_id);
+        res.sendStatus(200);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
 }
 
 /**
@@ -74,4 +161,4 @@ function getPublicKey(req, res) {
     res.send(publicKey);
 }
 
-module.exports = { registerUser, login, getPublicKey };
+module.exports = { registerUser, login, refreshToken, getPublicKey };

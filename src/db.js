@@ -40,4 +40,35 @@ async function getUser(email) {
     }
 }
 
-module.exports = { connection, connectDB, getUser };
+async function createToken(token) {
+    await connection.promise().query(
+        "insert into tokens set ?",
+        { token_id: token.token_id, exp: token.exp } );
+}
+
+async function getToken(token_id) {
+    let [result] = await connection.promise().query(
+        "select * from tokens where token_id=?", token_id);
+    return result[0];
+}
+
+async function isTokenRevoked(token_id) {
+    let [result] = await connection.promise().query(
+        "select * from tokens where token_id=?", token_id);
+    return !!result[0].revoked;
+}
+
+async function revokeToken(token_id) {
+    await connection.promise().query(
+        "update tokens set revoked=true where token_id=?", token_id);
+}
+
+module.exports = {
+    connection,
+    connectDB,
+    getUser,
+    createToken,
+    getToken,
+    isTokenRevoked,
+    revokeToken,
+};

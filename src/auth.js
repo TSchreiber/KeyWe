@@ -38,12 +38,19 @@ function generateToken(payload) {
  * @throws {Error} Throws an error if the token is invalid or cannot be verified.
  */
 async function verifyToken(token) {
-  return new Promise((resolve, reject) => {
-    jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, decoded) => {
-      if (err) reject(err);
-      else resolve(decoded);
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, decoded) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            if (Math.floor(new Date().getTime() / 1000) >= decoded.exp) {
+                reject(err);
+                return;
+            }
+            resolve(decoded);
+        });
     });
-  });
 }
 
 module.exports = { generateToken, verifyToken, publicKey };
