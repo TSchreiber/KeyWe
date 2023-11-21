@@ -17,7 +17,7 @@ endpoint, allowing seamless access without the need for the user to log in again
 ## Table of Contents
 
 - [Deploying the Project with docker-compose](#deploying-the-project-with-docker-compose)
-- [Using KeyWe's API Endpoints](#using-keywe's-api-endpoints)
+- [Using KeyWe's API Endpoints](#using-keywes-api-endpoints)
 - [Verifying a Token](#verifying-a-token)
 - [Using an Id Token](#using-an-id-token)
 
