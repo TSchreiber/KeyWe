@@ -161,4 +161,4 @@ function getPublicKey(req, res) {
     res.send(publicKey);
 }
 
-module.exports = { registerUser, login, refreshToken, getPublicKey };
+module.exports = { registerUser, login, refreshToken, revokeToken, getPublicKey };

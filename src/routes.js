@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { registerUser, login, getPublicKey } = require('./controllers');
+const { registerUser, login, refreshToken, revokeToken, getPublicKey } = require('./controllers');
 const { renderLogin, renderRegister } = require("./views");
 
 /**
@@ -58,9 +58,22 @@ router.get('/register', renderRegister);
  * @group User - Operations for refreshing an id token
  * @param {Object} req.body.refresh_token - user's refresh token
  * @returns {Object} 200 - An object containing an id token in the `id_token` attribute
+ * @returns {number} 401 - Unauthorized if the token is not provided
  * @returns {number} 403 - Forbidden if the token is invalid
  * @returns {Error} 500 - Internal server error
  */
 router.post('/token', refreshToken);
+
+/**
+ * @module routes
+ * @name POST /revoke
+ * @function
+ * @group User - Operations for revoking a refresh token
+ * @param {Object} req.body.refresh_token - user's refresh token
+ * @returns {number} 401 - Unauthorized if the token is not provided
+ * @returns {number} 403 - Forbidden if the token is invalid
+ * @returns {Error} 500 - Internal server error
+ */
+router.post('/revoke', revokeToken);
 
 module.exports = router;

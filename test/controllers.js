@@ -160,6 +160,6 @@ describe('Controllers', () => {
         } catch (e) {
             console.error(e);
         }
-        connection.destroy();
+        connection.end();
     });
 });
