@@ -7,7 +7,9 @@ const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const db = require("./db");
 const { connection, getUser } = require('./db');
-const { generateToken, publicKey, verifyToken } = require('./auth');
+const { signToken, publicKey, verifyToken } = require('./auth');
+const { getPublicKeys } =  require("./keyManagement.js");
+const jose = require("jose");
 
 const saltRounds = 10;
 /**
@@ -68,16 +70,15 @@ async function login(req, res) {
             let idTokenPayload = structuredClone(userData);
             idTokenPayload.token_type = "id";
             idTokenPayload.exp = Math.floor(new Date().getTime() / 1000) + idTokenTTL;
-            let id_token = generateToken(idTokenPayload);
+            let id_token = await signToken(idTokenPayload);
 
-            // TODO add token to db and assign the id
             let refreshTokenPayload = {
                 email: userData.email,
                 token_type: "refresh",
                 exp: Math.floor(new Date().getTime() / 1000) + refreshTokenTTL,
                 token_id: uuidv4()
             };
-            let refresh_token = generateToken(refreshTokenPayload);
+            let refresh_token = await signToken(refreshTokenPayload);
             // add the token to the database
             await db.createToken(refreshTokenPayload);
 
@@ -121,7 +122,7 @@ async function refreshToken(req, res) {
         let idTokenPayload = userData;
         idTokenPayload.token_type = "id";
         idTokenPayload.exp = Math.floor(new Date().getTime() / 1000) + idTokenTTL;
-        let id_token = generateToken(idTokenPayload);
+        let id_token = await signToken(idTokenPayload);
         res.send({id_token});
     } catch (e) {
         console.error(e);
@@ -150,15 +151,31 @@ async function revokeToken(req, res) {
     }
 }
 
+var publicKeys = {};
 /**
- * Retrieves the public key used for token verification.
+ * Retrieves the public key specified in the query
  *
  * @param {Object} req - The Express.js request object.
  * @param {Object} res - The Express.js response object.
  * @returns {void} No direct return value, but sends the public key as a response or an error status.
  */
-function getPublicKey(req, res) {
-    res.send(publicKey);
+async function getPublicKey(req, res) {
+    let kid = req.query.kid;
+    if (!publicKeys[kid]) {
+        publicKeys = await getPublicKeys();
+    }
+    if (!publicKeys[kid]) {
+        res.sendStatus(404);
+    } else {
+        let key = publicKeys[kid];
+        if (req.query.format == "PEM") {
+            res.send(
+                await jose.exportSPKI(
+                await jose.importJWK(key)));
+        } else {
+            res.send(key);
+        }
+    }
 }
 
 module.exports = { registerUser, login, refreshToken, revokeToken, getPublicKey };

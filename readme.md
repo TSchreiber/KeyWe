@@ -14,6 +14,12 @@ signed JWT is then sent to the service. The service can verify the JWT's
 authenticity using KeyWe's public key obtained from KeyWe's `GET /public_key`
 endpoint, allowing seamless access without the need for the user to log in again.
 
+KeyWe manages keys for you so you do not need to worry about managing keypairs.
+Keys are rotated automatically after 180 days by default, but you can adjust
+how frequently it rotates keys in the configuration. The public keys will be
+stored as long as there is a non-expired refresh token that references it, so
+users will not be force logged out when the key is rotated.
+
 ## Table of Contents
 
 - [Deploying the Project with docker-compose](#deploying-the-project-with-docker-compose)
@@ -29,14 +35,7 @@ endpoint, allowing seamless access without the need for the user to log in again
    git clone git@github.com:TSchreiber/KeyWe.git
    ```
 
-2. Create an RSA keypair with `openssl` or any other program capable of generating RSA keypairs:
-
-   ```bash
-   openssl genrsa -out private_key.pem 2048
-   openssl rsa -in private_key.pem -pubout -out public_key.pem
-   ```
-
-3. Run the entire application stack using Docker Compose:
+2. Run the entire application stack using Docker Compose:
 
    ```bash
    docker-compose up
@@ -139,6 +138,21 @@ fetch("<URL-to-your-deployed-KeyWe-instance>/revoke", {
 })
 ```
 
+To get a public key use the `/public_key` endpoint.
+
+Two query string parameters can be provided:
+1. `kid` - required. The id of the key you want.
+2. `format` - optional. The desired format for the key.
+Valid values are `JWK` and `PEM`. The default is `JWK` if no format is specified.
+
+```bash
+curl https://<URL-to-your-deployed-KeyWe-instance>/public_key?kid=<kid>&format=<format> > key_cache/<kid>
+```
+
+You are encouraged to cache the public keys. There will be a small number of
+keys used to sign all tokens. Furthermore, making a request to KeyWe to verify
+every token defeats the purpose of asymmetric signing.
+
 ## Verifying a Token
 
 Because KeyWe authentication is based on digital signatures, anyone can verify
@@ -176,10 +190,9 @@ function verifyToken(token) {
 }
 ```
 
-Note: the public key can be obtained from the `GET /public_key` endpoint.
-```bash
-curl <URL-to-your-deployed-KeyWe-instance>/public_key
-```
+Note: the public key can be obtained from the `GET /public_key` endpoint with
+`PEM` as the specified format. If you are using `jose` you should use the `JWK`
+format.
 
 ## Using an Id Token
 

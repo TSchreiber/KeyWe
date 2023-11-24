@@ -2,12 +2,18 @@ require('dotenv').config({path: "../env/test.env" });
 const assert = require('assert');
 const { verifyToken, publicKey } = require('../src/auth');
 const { registerUser, login, getPublicKey, refreshToken } = require('../src/controllers');
+const { getPrivateKey, getPublicKeys } = require("../src/keyManagement.js");
 const db = require("../src/db");
 const { connection } = require('../src/db');
 
 describe('Controllers', () => {
 
     before(async () => {
+        // Getting the private key before because it generates a new key when
+        // you get the private key for the first time on each startup. Doing
+        // it in the before means that the time won't be counted towards the
+        // first test that uses the private key
+        await getPrivateKey();
         try {
             await connection.promise().query("delete from users where email=?", "test@example.com");
             await connection.promise().query("delete from users where email=?", "login_test_user@example.com");
@@ -138,12 +144,20 @@ describe('Controllers', () => {
     });
 
     describe('public_key', () => {
-        it('should return the public key used to sign tokens', () => {
+        it('should return the public key used to sign tokens', async () => {
+            let kid = Object.keys(await getPublicKeys())[0];
             return new Promise((resolve, reject) => {
-                getPublicKey({},{
+                getPublicKey(
+                    {
+                        query: { kid }
+                    },
+                    {
                     send: (key) => {
-                        assert(key == publicKey);
-                        resolve();
+                        if (key.kid != kid) {
+                            reject(new Error("kid does not match"));
+                        } else {
+                            resolve();
+                        }
                     },
                     sendStatus: (statusCode) => {
                         reject(new Error("Responded with status code " + statusCode));
