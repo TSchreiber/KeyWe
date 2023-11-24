@@ -23,7 +23,7 @@ users will not be force logged out when the key is rotated.
 ## Table of Contents
 
 - [Deploying the Project with docker-compose](#deploying-the-project-with-docker-compose)
-- [Using KeyWe's API Endpoints](#using-keywe's-api-endpoints)
+- [Using KeyWe's API Endpoints](#using-keywes-api-endpoints)
 - [Verifying a Token](#verifying-a-token)
 - [Using an Id Token](#using-an-id-token)
 
