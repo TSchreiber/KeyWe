@@ -1,6 +1,13 @@
 <html>
+    <head>
+        <link rel="icon" href="favicon.png"/>
+        <title>Login</title>
+    </head>
+
     <body>
+        <img src="logo-text-128px.png"/>
         <form onsubmit="form_onSubmit(event)">
+            <h1>Login</h1>
             <label for="email">Email</label>
             <input id="email" name="email" type="email" required/>
             <label for="password">Password</label>
@@ -17,7 +24,12 @@
     font-family: sans-serif;
 }
 
-html,body {
+img {
+    height: 64px;
+    margin-bottom: 1em;
+}
+
+* {
     margin: 0;
     padding: 0;
 }
@@ -28,6 +40,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    transform: translateY(-4rem);
 }
 
 form {
@@ -36,6 +49,11 @@ form {
     background: #f0f0f0;
     padding: 1.5em;
     border-radius: 0.5em;
+}
+
+h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 input:not(:last-child) {
