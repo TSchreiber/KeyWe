@@ -16,6 +16,7 @@
                 name="password"
                 required />
             <input type="submit"/>
+            <h6>Don't have an account? <a id="register-link">Register</a></h6>
         </form>
     </body>
 
@@ -56,6 +57,10 @@ h1 {
     margin-bottom: 1.5rem;
 }
 
+a {
+    color: hsl(200, 100%, 60%);
+}
+
 input:not(:last-child) {
     margin-bottom: 1.5em;
 }
@@ -68,6 +73,13 @@ input[type=submit] {
 </style>
 
 <script>
+const redirect_url =
+    new URLSearchParams(window.location.search)
+    .get("redirect_url");
+
+let register_link = document.getElementById("register-link");
+register_link.href = `register?redirect_url=${encodeURIComponent(redirect_url)}`;
+
 function form_onSubmit(event) {
     let data = new FormData(event.target);
     fetch("/login", {

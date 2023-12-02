@@ -18,6 +18,7 @@
                 pattern="<%=PASSWORD_PATTERN%>"
                 title="<%=PASSWORD_TITLE%>"/>
             <input type="submit"/>
+            <h6>Already have an account? <a id="login-link">Login</a></h6>
         </form>
     </body>
 
@@ -58,6 +59,10 @@ h1 {
     margin-bottom: 1.5rem;
 }
 
+a {
+    color: hsl(200, 100%, 60%);
+}
+
 input:not(:last-child) {
     margin-bottom: 1.5em;
 }
@@ -70,6 +75,13 @@ input[type=submit] {
 </style>
 
 <script>
+const redirect_url =
+    new URLSearchParams(window.location.search)
+    .get("redirect_url");
+
+let login_link = document.getElementById("login-link");
+login_link.href = `login?redirect_url=${encodeURIComponent(redirect_url)}`;
+
 function form_onSubmit(event) {
     let data = new FormData(event.target);
     fetch("/register", {
@@ -85,9 +97,6 @@ function form_onSubmit(event) {
     .catch(err => console.error(err))
     .then(res => res.text())
     .then(token => {
-        let redirect_url =
-            new URLSearchParams(window.location.search)
-            .get("redirect_url");
         window.location = `${redirect_url}?token=${token}`;
     });
     event.preventDefault();
