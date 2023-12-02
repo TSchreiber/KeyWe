@@ -20,13 +20,13 @@ describe('Controllers', () => {
         } catch (e) {
             console.error(e);
         }
-        registerUser({ body: { email: 'login_test_user@example.com', password: 'password' } }, {send: () => {}})
+        registerUser({ body: { email: 'login_test_user@example.com', password: 'Password1!' } }, {send: () => {}})
     });
 
     describe('registerUser', () => {
         it('should return a JWT token upon successful registration', () => {
             return new Promise((resolve, reject) => {
-                const req = { body: { email: 'test@example.com', password: 'password' } };
+                const req = { body: { email: 'test@example.com', password: 'Password1!' } };
                 const res = {
                     send: async (token) => {
                         try {
@@ -50,12 +50,32 @@ describe('Controllers', () => {
                 registerUser(req, res);
             });
         });
+
+        it('should return a 400 status code if the password is not long enough', () => {
+            process.env.PASSWORD_MIN_LENGTH = 8;
+            return new Promise((resolve, reject) => {
+                const req = { body: { email: 'test@example.com', password: 'Xx!0' } };
+                const res = {
+                    send: async () => {
+                        reject();
+                    },
+                    sendStatus: async (statusCode) => {
+                        if (statusCode == 400) {
+                            resolve();
+                        } else {
+                            reject();
+                        }
+                    }
+                };
+                registerUser(req, res);
+            });
+        });
     });
 
     describe('login', () => {
         it('should return a valid JWT token upon successful login', () => {
             return new Promise((resolve, reject) => {
-                const req = { body: { email: 'login_test_user@example.com', password: 'password' } };
+                const req = { body: { email: 'login_test_user@example.com', password: 'Password1!' } };
                 const res = {
                     send: async (token) => {
                         try {
@@ -87,7 +107,7 @@ describe('Controllers', () => {
     describe('refresh token', () => {
         function loginWithTestUser() {
             return new Promise((resolve, reject) => {
-                const req = { body: { email: 'login_test_user@example.com', password: 'password' } };
+                const req = { body: { email: 'login_test_user@example.com', password: 'Password1!' } };
                 const res = { send: (token) => resolve(token) };
                 login(req, res);
             });

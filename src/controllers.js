@@ -25,6 +25,22 @@ const idTokenTTL = process.env.id_token_TTL | 5 * 60;
  **/
 const refreshTokenTTL = process.env.refresh_token_TTL | 30 * 24 * 60 * 60;
 
+const pwPattern = require("./passwordPatternBuilder.js");
+function passwordMeetsMinimumPasswordRequirements(password) {
+    let {pattern} = pwPattern.from({
+        MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH | 8,
+        CONTAINS_SPECIAL: process.env.PASSWORD_CONTAINS_SPECIAL | true,
+        CONTAINS_UPPER: process.env.PASSWORD_CONTAINS_UPPER | true,
+        CONTAINS_LOWER: process.env.PASSWORD_CONTAINS_LOWER | true,
+        CONTAINS_DIGIT: process.env.PASSWORD_CONTAINS_DIGIT | true,
+    });
+    if (!password.match(pattern)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 /**
  * Registers a new user and returns a JWT token upon success.
  *
@@ -34,6 +50,10 @@ const refreshTokenTTL = process.env.refresh_token_TTL | 30 * 24 * 60 * 60;
  */
 async function registerUser(req, res) {
     try {
+        if (!passwordMeetsMinimumPasswordRequirements(req.body.password)) {
+            res.sendStatus(400);
+            return;
+        }
         let salt = bcrypt.genSaltSync(saltRounds);
         let hashedPassword = bcrypt.hashSync(req.body.password, salt);
         connection.query('INSERT INTO users SET ?', {
