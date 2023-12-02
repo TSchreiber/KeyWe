@@ -95,9 +95,9 @@ function form_onSubmit(event) {
         })
     })
     .catch(err => console.error(err))
-    .then(res => res.text())
-    .then(token => {
-        window.location = `${redirect_url}?token=${token}`;
+    .then(res => res.json())
+    .then(tokens => {
+        window.location = `${redirect_url}?id_token=${tokens.id_token}&refresh_token=${tokens.refresh_token}`;
     });
     event.preventDefault();
     return false;
