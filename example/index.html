@@ -1,0 +1,51 @@
+<html>
+
+    <head>
+        <title>KeyWe - Example</title>
+    </head>
+
+    <body>
+        <div id="logged-in" style="display: none">
+            <h2>Authenticated as <span id="users-email"></span></h2>
+        </div>
+        <div id="logged-out" style="display: none">
+            <h2>Not authenticated, please <a id="login-link">log in</a></h2>
+        </div>
+    </body>
+
+<script>
+const searchParams = new URLSearchParams(window.location.search);
+if (searchParams.get("id_token")) {
+    sessionStorage.setItem("keywe_id_token", searchParams.get("id_token"));
+}
+if (searchParams.get("refresh_token")) {
+    localStorage.setItem("keywe_refresh_token", searchParams.get("refresh_token"));
+}
+// This is just to remove the tokens from the search bar
+if (searchParams.size > 0) {
+    window.history.replaceState({}, document.title, "/");
+}
+
+function decodeToken(token) {
+    let [header, payload, signature] = token.split(".");
+    return {
+        header: JSON.parse(atob(header,"base64")),
+        payload: JSON.parse(atob(payload,"base64")),
+        signature
+    };
+}
+
+let refresh_token = localStorage.getItem("keywe_refresh_token");
+if (!refresh_token) {
+    let keywe_url = "http://localhost:1455";
+    let redirect_url = window.location.origin;
+    let login_link = `${keywe_url}/login?redirect_url=${encodeURIComponent(redirect_url)}`
+    document.getElementById("login-link").href = login_link;
+    document.getElementById("logged-out").style.display = "block";
+} else {
+    let token_data = decodeToken(refresh_token);
+    document.getElementById("users-email").innerText = token_data.payload.email;
+    document.getElementById("logged-in").style.display = "block";
+}
+</script>
+</html>
