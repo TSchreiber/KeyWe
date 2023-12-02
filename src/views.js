@@ -1,5 +1,14 @@
 const pwPattern = require("../src/passwordPatternBuilder.js");
 
+function requireRedirectURL(req, res, next) {
+    if (!req.query.redirect_url) {
+        res.status(400);
+        res.send("Missing redirect URL");
+    } else {
+        next();
+    }
+}
+
 /**
  *
  */
@@ -24,4 +33,4 @@ function renderRegister(_, res) {
     });
 }
 
-module.exports = { renderLogin, renderRegister };
+module.exports = { requireRedirectURL, renderLogin, renderRegister };

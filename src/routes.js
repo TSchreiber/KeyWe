@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const { registerUser, login, refreshToken, revokeToken, getPublicKey } = require('./controllers');
-const { renderLogin, renderRegister } = require("./views");
+const { requireRedirectURL, renderLogin, renderRegister } = require("./views");
 
 /**
  * @module routes
@@ -44,12 +44,12 @@ router.post('/login', login);
 /**
  *
  */
-router.get('/login', renderLogin);
+router.get('/login', requireRedirectURL, renderLogin);
 
 /**
  *
  */
-router.get('/register', renderRegister);
+router.get('/register', requireRedirectURL, renderRegister);
 
 /**
  * @module routes
