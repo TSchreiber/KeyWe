@@ -173,7 +173,8 @@ async function revokeToken(req, res) {
 
 var publicKeys = {};
 /**
- * Retrieves the public key specified in the query
+ * Retrieves the public key specified in the query, or the full JWKs if a kid
+ * is not provided.
  *
  * @param {Object} req - The Express.js request object.
  * @param {Object} res - The Express.js response object.
@@ -181,6 +182,13 @@ var publicKeys = {};
  */
 async function getPublicKey(req, res) {
     let kid = req.query.kid;
+    if (!kid) {
+        if (Object.keys(publicKeys).length == 0) {
+            publicKeys = await getPublicKeys();
+        }
+        res.send({ keys: Object.values(publicKeys) });
+        return;
+    }
     if (!publicKeys[kid]) {
         publicKeys = await getPublicKeys();
     }
