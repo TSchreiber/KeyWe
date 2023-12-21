@@ -40,7 +40,6 @@ async function signToken(payload) {
     return await new jose.SignJWT(payload)
         .setProtectedHeader({ alg: key.alg, kid: key.kid })
         .setIssuedAt()
-        .setExpirationTime("5m")//2h
         .sign(await jose.importJWK(key));
 }
 
