@@ -21,11 +21,11 @@ function renderLogin(_, res) {
  */
 function renderRegister(_, res) {
     let {pattern, title} = pwPattern.from({
-        MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH,
-        CONTAINS_SPECIAL: process.env.PASSWORD_CONTAINS_SPECIAL,
-        CONTAINS_UPPER: process.env.PASSWORD_CONTAINS_UPPER,
-        CONTAINS_LOWER: process.env.PASSWORD_CONTAINS_LOWER,
-        CONTAINS_DIGIT: process.env.PASSWORD_CONTAINS_DIGIT,
+        MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH || 8,
+        CONTAINS_SPECIAL: process.env.PASSWORD_CONTAINS_SPECIAL || false,
+        CONTAINS_UPPER: process.env.PASSWORD_CONTAINS_UPPER || true,
+        CONTAINS_LOWER: process.env.PASSWORD_CONTAINS_LOWER || true,
+        CONTAINS_DIGIT: process.env.PASSWORD_CONTAINS_DIGIT || true,
     });
     res.render("register", {
         PASSWORD_PATTERN: pattern,
