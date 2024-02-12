@@ -30,8 +30,14 @@ const connection = mysql.createPool({
  */
 async function getUser(email) {
     try {
-        let [result] = await connection.promise().query('select * from users where email=?', email);
-        return result[0];
+        let userDataQuery = connection.promise().query('select * from users where email=?', email);
+        let userRolesQuery = connection.promise().query('select * from users_roles where email=?', email);
+        let [userDataResult] = await userDataQuery;
+        let [userRolesResult] = await userRolesQuery;
+        let userData = userDataResult[0];
+        let userRoles = userRolesResult.map(x=>x.role);
+        userData.roles = userRoles;
+        return userData;
     } catch (err) {
         throw err;
     }

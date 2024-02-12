@@ -6,6 +6,12 @@ CREATE TABLE `users` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `users_roles` (
+  `email` varchar(100) NOT NULL,
+  `role` varchar(100) NOT NULL,
+  PRIMARY KEY (`email`,`role`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `tokens` (
   `token_id` varchar(255) NOT NULL,
   `exp` bigint NOT NULL,
