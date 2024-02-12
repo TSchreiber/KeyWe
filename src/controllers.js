@@ -29,7 +29,7 @@ const pwPattern = require("./passwordPatternBuilder.js");
 function passwordMeetsMinimumPasswordRequirements(password) {
     let {pattern} = pwPattern.from({
         MIN_LENGTH: process.env.PASSWORD_MIN_LENGTH | 8,
-        CONTAINS_SPECIAL: process.env.PASSWORD_CONTAINS_SPECIAL | true,
+        CONTAINS_SPECIAL: process.env.PASSWORD_CONTAINS_SPECIAL | false,
         CONTAINS_UPPER: process.env.PASSWORD_CONTAINS_UPPER | true,
         CONTAINS_LOWER: process.env.PASSWORD_CONTAINS_LOWER | true,
         CONTAINS_DIGIT: process.env.PASSWORD_CONTAINS_DIGIT | true,

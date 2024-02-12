@@ -5,6 +5,7 @@
 
 const jose = require("jose");
 const { getPrivateKey, getPublicKeys } = require("./keyManagement");
+const HOST = process.env.HOST;
 
 var publicKeys = {};
 /**
@@ -32,14 +33,18 @@ async function verifyToken(token) {
 /**
  * Retreives the privte key from the key manager and uses it to sign a token.
  *
- * @param {Object} payload - The payload to include in the token.
+ * @param {{email: string}} payload - The payload to include in the token. The
+ * email must be included because it will be used as the subject, but everything
+ * in the payload object will be included in the token's claims.
  * @returns {string} The generated JWT token.
  */
 async function signToken(payload) {
     let key = await getPrivateKey();
     return await new jose.SignJWT(payload)
         .setProtectedHeader({ alg: key.alg, kid: key.kid })
+        .setSubject(payload.email)
         .setIssuedAt()
+        .setIssuer(HOST)
         .sign(await jose.importJWK(key));
 }
 

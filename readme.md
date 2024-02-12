@@ -35,7 +35,13 @@ users will not be force logged out when the key is rotated.
    git clone git@github.com:TSchreiber/KeyWe.git
    ```
 
-2. Run the entire application stack using Docker Compose:
+2. (Optional) Edit the environment variables in `docker-compose.yml`
+
+    Primarily, you will want to edit `HOST` if you are going to be running KeyWe
+    outside of a local development environment. This is what will be used as the
+    `iss` property of your token's cliams.
+
+3. Run the entire application stack using Docker Compose:
 
    ```bash
    docker-compose up
